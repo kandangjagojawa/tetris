@@ -1,3 +1,8 @@
+/* 
+ * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris)
+ * STYLE: tetris.css (6 Kolom & Mobile Responsive)
+ */
+
 @font-face {
   font-family: 'Ngayogyakarta';
   src: url('ngayogyann.ttf') format('truetype');
@@ -15,7 +20,6 @@
   --cream-parchment: #FAF3E0;
   --text-dark: #231103;
   --red-accent: #800000;
-  --red-glow: #FF4D4D;
   --green-success: #2E7D32;
   --font-aksara: 'Ngayogyakarta', 'Noto Sans Javanese', 'Javanese Text', serif;
   --font-latin: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -36,8 +40,10 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 15px;
+  touch-action: manipulation;
 }
 
+/* Header */
 .app-header {
   text-align: center;
   margin-bottom: 15px;
@@ -49,24 +55,25 @@ body {
 
 .app-title-aksara {
   font-family: var(--font-aksara);
-  font-size: 2.2rem;
+  font-size: 2rem;
   color: var(--gold-primary);
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
   line-height: 1.2;
 }
 
 .app-title-latin {
-  font-size: 1.1rem;
+  font-size: 1rem;
   letter-spacing: 2px;
   color: var(--gold-light);
   text-transform: uppercase;
   font-weight: 600;
 }
 
+/* Main Layout Grid */
 .game-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px;
   justify-content: center;
   align-items: flex-start;
   max-width: 950px;
@@ -81,13 +88,14 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
+/* Left Panel: Target Words */
 .target-panel {
-  flex: 1 1 240px;
-  max-width: 280px;
+  flex: 1 1 220px;
+  max-width: 260px;
 }
 
 .panel-title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--gold-light);
   border-bottom: 1px solid var(--gold-dark);
   padding-bottom: 6px;
@@ -114,7 +122,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease;
 }
 
 .word-item.completed {
@@ -124,16 +131,17 @@ body {
 
 .word-item .word-aksara {
   font-family: var(--font-aksara);
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   color: var(--gold-primary);
 }
 
 .word-item .word-latin {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--cream-parchment);
   opacity: 0.8;
 }
 
+/* Center Panel: 6 Kolom x 12 Baris (240px x 480px) */
 .board-panel {
   display: flex;
   flex-direction: column;
@@ -141,8 +149,8 @@ body {
 }
 
 #tetris-area {
-  width: 320px;
-  height: 480px;
+  width: 240px; /* 6 kolom x 40px */
+  height: 480px; /* 12 baris x 40px */
   background-color: var(--bg-board);
   background-image: 
     linear-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 1px),
@@ -153,8 +161,10 @@ body {
   position: relative;
   overflow: hidden;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  touch-action: none; /* Mencegah layar HP scroll saat di-swipe */
 }
 
+/* Block Tiles dengan Fit Aksara */
 .block {
   width: 40px;
   height: 40px;
@@ -164,13 +174,17 @@ body {
   border-radius: 6px;
   color: var(--gold-light);
   font-family: var(--font-aksara);
-  font-size: 1.5rem;
+  font-size: 1.15rem; /* Ukuran pas agar aksara tidak terpotong */
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 1px;
   text-shadow: 0 0 4px rgba(0,0,0,0.8);
   box-shadow: inset 0 0 6px rgba(255, 215, 0, 0.3), 0 2px 4px rgba(0,0,0,0.5);
-  transition: transform 0.1s ease;
   user-select: none;
 }
 
@@ -188,40 +202,41 @@ body {
 
 @keyframes pulseMatch {
   from { transform: scale(1); box-shadow: 0 0 10px #FFD700; }
-  to { transform: scale(1.1); box-shadow: 0 0 20px #FFD700; }
+  to { transform: scale(1.08); box-shadow: 0 0 18px #FFD700; }
 }
 
+/* Right Panel: Stats & Controls */
 .stats-panel {
   flex: 1 1 200px;
-  max-width: 250px;
+  max-width: 240px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .stat-box {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid var(--gold-dark);
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px;
   text-align: center;
 }
 
 .stat-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--gold-light);
   text-transform: uppercase;
 }
 
 .stat-value {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: var(--cream-parchment);
 }
 
 #next-puzzle-box {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   margin: 5px auto 0 auto;
   background: var(--bg-board);
   border: 2px dashed var(--gold-dark);
@@ -231,6 +246,7 @@ body {
   justify-content: center;
 }
 
+/* Buttons */
 .btn-group {
   display: flex;
   flex-direction: column;
@@ -241,22 +257,12 @@ body {
   background: linear-gradient(180deg, #D4AF37 0%, #AA820A 100%);
   color: var(--text-dark);
   border: none;
-  padding: 10px 15px;
+  padding: 10px 12px;
   font-weight: bold;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
+  font-size: 0.9rem;
   box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-}
-
-.btn:hover {
-  background: linear-gradient(180deg, #F3E5AB 0%, #D4AF37 100%);
-  transform: translateY(-2px);
-}
-
-.btn:active {
-  transform: translateY(0);
 }
 
 .btn-secondary {
@@ -264,24 +270,25 @@ body {
   color: #fff;
 }
 
+/* Touch Controls Mobile */
 .mobile-controls {
-  display: none;
+  display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  width: 100%;
-  max-width: 320px;
-  margin-top: 15px;
+  gap: 8px;
+  width: 240px;
+  margin-top: 12px;
 }
 
 .touch-btn {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(212, 175, 55, 0.25);
   border: 2px solid var(--gold-primary);
   color: var(--gold-light);
-  padding: 15px;
-  font-size: 1.2rem;
-  border-radius: 10px;
+  padding: 12px 5px;
+  font-size: 1.1rem;
+  border-radius: 8px;
   touch-action: manipulation;
   user-select: none;
+  cursor: pointer;
 }
 
 .touch-btn:active {
@@ -289,11 +296,12 @@ body {
   color: var(--text-dark);
 }
 
+/* Modals */
 .modal-overlay {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.85);
   z-index: 100;
   align-items: center;
   justify-content: center;
@@ -305,24 +313,21 @@ body {
   border: 3px solid var(--gold-primary);
   border-radius: 12px;
   padding: 20px;
-  max-width: 500px;
+  max-width: 480px;
   width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.9);
 }
 
 .modal-title {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: var(--gold-primary);
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   border-bottom: 1px solid var(--gold-dark);
-  padding-bottom: 8px;
+  padding-bottom: 6px;
 }
 
 #json-editor-textarea {
   width: 100%;
-  height: 200px;
+  height: 180px;
   background: #111;
   color: #0f0;
   font-family: monospace;
@@ -338,10 +343,7 @@ body {
     align-items: center;
   }
   .target-panel, .stats-panel {
-    max-width: 320px;
+    max-width: 240px;
     width: 100%;
-  }
-  .mobile-controls {
-    display: grid;
   }
 }
