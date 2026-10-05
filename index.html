@@ -2,12 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Game Menyusun Kata Aksara Jawa - Tetris Word Building</title>
     <link rel="stylesheet" href="tetris.css">
 </head>
 <body>
 
+    <!-- Header -->
     <header class="app-header">
         <h1 class="app-title-aksara">ꦒꦩꦼꦱ꧀ꦪꦸꦱꦸꦤ꧀ꦏꦠꦄꦏ꧀ꦱꦫꦗꦮ</h1>
         <div class="app-title-latin">Word Building Game • Aksara Jawa</div>
@@ -15,72 +16,77 @@
 
     <main class="game-container">
         
+        <!-- Target Kata Ringkas (Daftar Tampak Semua) -->
         <section class="panel target-panel">
             <h2 class="panel-title">🎯 Target Kata</h2>
             <ul id="target-word-list" class="word-list">
+                <!-- Diisi otomatis oleh JavaScript -->
             </ul>
         </section>
 
+        <!-- Papan Game Tetris -->
         <section class="panel board-panel">
             <div id="tetris-area">
+                <!-- Balok Tetris -->
             </div>
 
+            <!-- Tombol Kontrol Layar Sentuh HP -->
             <div class="mobile-controls">
                 <button id="touch-left" class="touch-btn">◀</button>
                 <button id="touch-swap" class="touch-btn">🔄</button>
                 <button id="touch-right" class="touch-btn">▶</button>
                 <button id="touch-down" class="touch-btn">▼</button>
-                <button id="touch-drop" class="touch-btn">⚡ DROP</button>
+                <button id="touch-drop" class="touch-btn">⚡</button>
             </div>
         </section>
 
+        <!-- Statistik & Menu Utama -->
         <section class="panel stats-panel">
-            <div class="stat-box">
-                <div class="stat-label">Skor</div>
-                <div id="stat-score" class="stat-value">0</div>
-            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Skor</div>
+                    <div id="stat-score" class="stat-value">0</div>
+                </div>
 
-            <div class="stat-box">
-                <div class="stat-label">Level</div>
-                <div id="stat-level" class="stat-value">1</div>
-            </div>
+                <div class="stat-box">
+                    <div class="stat-label">Level</div>
+                    <div id="stat-level" class="stat-value">1</div>
+                </div>
 
-            <div class="stat-box">
-                <div class="stat-label">Kata Tertebak</div>
-                <div id="stat-words" class="stat-value">0</div>
-            </div>
+                <div class="stat-box">
+                    <div class="stat-label">Kata</div>
+                    <div id="stat-words" class="stat-value">0</div>
+                </div>
 
-            <div class="stat-box">
-                <div class="stat-label">Balok Berikutnya</div>
                 <div id="next-puzzle-box">
+                    <!-- Preview Balok Berikutnya -->
                 </div>
             </div>
 
             <div class="btn-group">
-                <button id="btn-start" class="btn">▶ Mulai Game</button>
+                <button id="btn-start" class="btn">▶ Mulai</button>
                 <button id="btn-pause" class="btn btn-secondary">⏸ Pause</button>
                 <button id="btn-reset" class="btn btn-secondary">↺ Reset</button>
-                <button id="btn-json" class="btn btn-secondary">⚙️ Kelola tetris.json</button>
+                <button id="btn-json" class="btn btn-secondary">⚙️ tetris.json</button>
             </div>
         </section>
 
     </main>
 
+    <!-- Modal JSON Editor -->
     <div id="json-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 class="modal-title">⚙️ Editor Data Kata (tetris.json)</h3>
-            <p style="font-size: 0.85rem; margin-bottom: 10px; color: var(--gold-light);">
-                Anda dapat menambah, mengubah, atau memperbarui kata target di bawah ini. Pastikan format JSON tetap valid.
-            </p>
             <textarea id="json-editor-textarea"></textarea>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;">
-                <button id="btn-download-json" class="btn btn-secondary">💾 Unduh tetris.json</button>
-                <button id="btn-save-json" class="btn">✓ Simpan & Terapkan</button>
+            <div style="display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap;">
+                <button id="btn-download-json" class="btn btn-secondary">💾 Unduh</button>
+                <button id="btn-save-json" class="btn">✓ Simpan</button>
                 <button id="btn-close-json" class="btn btn-secondary">Tutup</button>
             </div>
         </div>
     </div>
 
+    <!-- Script Utama -->
     <script src="kbj.js"></script>
     <script src="tetris.js"></script>
 </body>
