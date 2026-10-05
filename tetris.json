@@ -3,10 +3,7 @@
     "id": 1,
     "latin": "sabar",
     "arti": "Sabar / Menahan Diri",
-    "sukuKata": [
-      "ꦱ",
-      "ꦧꦂ"
-    ],
+    "sukuKata": ["ꦱ", "ꦧꦂ"],
     "level": 1,
     "category": "Sifat Utami"
   },
@@ -14,10 +11,7 @@
     "id": 2,
     "latin": "budi",
     "arti": "Budi Pekerti / Akal",
-    "sukuKata": [
-      "ꦧꦸ",
-      "ꦢꦶ"
-    ],
+    "sukuKata": ["ꦧꦸ", "ꦢꦶ"],
     "level": 1,
     "category": "Sifat Utami"
   },
@@ -25,10 +19,7 @@
     "id": 3,
     "latin": "rukun",
     "arti": "Rukun / Damai",
-    "sukuKata": [
-      "ꦫꦸ",
-      "ꦏꦸꦤ꧀"
-    ],
+    "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"],
     "level": 1,
     "category": "Social"
   },
@@ -36,10 +27,7 @@
     "id": 4,
     "latin": "suka",
     "arti": "Gembira / Senang",
-    "sukuKata": [
-      "ꦱꦸ",
-      "ꦏ"
-    ],
+    "sukuKata": ["ꦱꦸ", "ꦏ"],
     "level": 1,
     "category": "Emosi"
   },
@@ -47,10 +35,7 @@
     "id": 5,
     "latin": "duka",
     "arti": "Sedih / Duka",
-    "sukuKata": [
-      "ꦢꦸ",
-      "ꦏ"
-    ],
+    "sukuKata": ["ꦢꦸ", "ꦏ"],
     "level": 1,
     "category": "Emosi"
   },
@@ -58,11 +43,7 @@
     "id": 6,
     "latin": "utama",
     "arti": "Utama / Terbaik",
-    "sukuKata": [
-      "ꦈ",
-      "ꦠ",
-      "ꦩ"
-    ],
+    "sukuKata": ["ꦈ", "ꦠ", "ꦩ"],
     "level": 2,
     "category": "Keutamaan"
   },
@@ -70,10 +51,7 @@
     "id": 7,
     "latin": "karsa",
     "arti": "Kehendak / Niat",
-    "sukuKata": [
-      "ꦏꦂ",
-      "ꦱ"
-    ],
+    "sukuKata": ["ꦏꦂ", "ꦱ"],
     "level": 2,
     "category": "Sifat Utami"
   },
@@ -81,10 +59,7 @@
     "id": 8,
     "latin": "subur",
     "arti": "Subur / Makmur",
-    "sukuKata": [
-      "ꦱꦸ",
-      "ꦧꦸꦂ"
-    ],
+    "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"],
     "level": 2,
     "category": "Alam"
   },
@@ -92,10 +67,7 @@
     "id": 9,
     "latin": "segar",
     "arti": "Segar / Sehat",
-    "sukuKata": [
-      "ꦱꦼ",
-      "ꦒꦂ"
-    ],
+    "sukuKata": ["ꦱꦼ", "ꦒꦂ"],
     "level": 2,
     "category": "Kesehatan"
   },
@@ -103,68 +75,8 @@
     "id": 10,
     "latin": "murni",
     "arti": "Suci / Murni",
-    "sukuKata": [
-      "ꦩꦸ",
-      "ꦂ",
-      "ꦤꦶ"
-    ],
+    "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"],
     "level": 2,
     "category": "Sifat Utami"
-  },
-  {
-    "id": 11,
-    "latin": "sinau",
-    "arti": "Belajar",
-    "sukuKata": [
-      "ꦱꦶ",
-      "ꦤ",
-      "ꦈ"
-    ],
-    "level": 3,
-    "category": "Pendidikan"
-  },
-  {
-    "id": 12,
-    "latin": "praja",
-    "arti": "Negeri / Kota",
-    "sukuKata": [
-      "ꦥꦿ",
-      "ꦗ"
-    ],
-    "level": 3,
-    "category": "Pemerintahan"
-  },
-  {
-    "id": 13,
-    "latin": "warta",
-    "arti": "Berita / Kabar",
-    "sukuKata": [
-      "ꦮꦂ",
-      "ꦠ"
-    ],
-    "level": 3,
-    "category": "Komunikasi"
-  },
-  {
-    "id": 14,
-    "latin": "mulya",
-    "arti": "Mulia / Terhormat",
-    "sukuKata": [
-      "ꦩꦸ",
-      "ꦭꦾ"
-    ],
-    "level": 3,
-    "category": "Keutamaan"
-  },
-  {
-    "id": 15,
-    "latin": "pinter",
-    "arti": "Pintar / Cerdas",
-    "sukuKata": [
-      "ꦥꦶ",
-      "ꦤ꧀ꦠꦼꦂ"
-    ],
-    "level": 3,
-    "category": "Pendidikan"
   }
 ]
