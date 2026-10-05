@@ -54,9 +54,9 @@ body {
 
 .app-title-aksara {
   font-family: var(--font-aksara);
-  font-size: 1.5rem;
+  font-size: 1.0rem;
   color: var(--gold-primary);
-  line-height: 1.1;
+  line-height: 1.8;
 }
 
 .app-title-latin {
