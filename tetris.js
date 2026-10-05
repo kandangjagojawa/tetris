@@ -1,37 +1,39 @@
-/*
- * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris Engine)
- * FILE: tetris.js
- * RULES: Integrasi Paugéran KBJ & Word Building Match Matrix
- */
-
 function TetrisGame() {
     var self = this;
 
-    // Config
-    this.unit = 40;     // 40px per grid cell
-    this.areaX = 8;     // 8 columns wide
-    this.areaY = 12;    // 12 rows high
+    this.unit = 40;     
+    this.areaX = 8;     
+    this.areaY = 12;    
 
-    // Game state
     this.score = 0;
     this.level = 1;
     this.wordsFound = 0;
     this.paused = false;
     this.running = false;
 
-    // Data
     this.targetWords = [];
     this.completedWords = new Set();
-    this.grid = []; // 12 x 8 matrix storing null or { element, aksara }
+    this.grid = []; 
 
-    // Active falling block
     this.currentBlock = null;
     this.nextAksara = '';
     this.fallTimer = null;
-    this.speed = 800; // ms
+    this.speed = 800; 
 
-    // Web Audio Sound Synth
     this.audioCtx = null;
+
+    this.wordDatabaseFallback = [
+        { "id": 1, "latin": "sabar", "arti": "Sabar / Menahan Diri", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1, "category": "Sifat Utami" },
+        { "id": 2, "latin": "budi", "arti": "Budi Pekerti / Akal", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1, "category": "Sifat Utami" },
+        { "id": 3, "latin": "rukun", "arti": "Rukun / Damai", "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"], "level": 1, "category": "Social" },
+        { "id": 4, "latin": "suka", "arti": "Gembira / Senang", "sukuKata": ["ꦱꦸ", "ꦏ"], "level": 1, "category": "Emosi" },
+        { "id": 5, "latin": "duka", "arti": "Sedih / Duka", "sukuKata": ["ꦢꦸ", "ꦏ"], "level": 1, "category": "Emosi" },
+        { "id": 6, "latin": "utama", "arti": "Utama / Terbaik", "sukuKata": ["ꦈ", "ꦠ", "ꦩ"], "level": 2, "category": "Keutamaan" },
+        { "id": 7, "latin": "karsa", "arti": "Kehendak / Niat", "sukuKata": ["ꦏꦂ", "ꦱ"], "level": 2, "category": "Sifat Utami" },
+        { "id": 8, "latin": "subur", "arti": "Subur / Makmur", "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"], "level": 2, "category": "Alam" },
+        { "id": 9, "latin": "segar", "arti": "Segar / Sehat", "sukuKata": ["ꦱꦼ", "ꦒꦂ"], "level": 2, "category": "Kesehatan" },
+        { "id": 10, "latin": "murni", "arti": "Suci / Murni", "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"], "level": 2, "category": "Sifat Utami" }
+    ];
 
     this.init = function() {
         self.initBoardMatrix();
@@ -61,8 +63,8 @@ function TetrisGame() {
                 osc.start();
                 osc.stop(self.audioCtx.currentTime + 0.1);
             } else if (type === 'match') {
-                osc.frequency.setValueAtTime(523.25, self.audioCtx.currentTime); // C5
-                osc.frequency.exponentialRampToValueAtTime(659.25, self.audioCtx.currentTime + 0.3); // E5
+                osc.frequency.setValueAtTime(523.25, self.audioCtx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(659.25, self.audioCtx.currentTime + 0.3); 
                 gain.gain.setValueAtTime(0.2, self.audioCtx.currentTime);
                 osc.start();
                 osc.stop(self.audioCtx.currentTime + 0.3);
@@ -89,27 +91,27 @@ function TetrisGame() {
 
     this.loadWordDatabase = function() {
         fetch('tetris.json')
-            .then(function(res) { return res.json(); })
+            .then(function(res) { 
+                if (!res.ok) throw new Error('File fetch failed');
+                return res.json(); 
+            })
             .then(function(data) {
                 self.wordDatabase = data;
                 self.setupLevelTargetWords();
             })
             .catch(function(err) {
-                console.log('Menggunakan fallback data JSON...');
-                self.wordDatabase = [
-                    { "id": 1, "latin": "sabar", "arti": "Sabar", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1 },
-                    { "id": 2, "latin": "budi", "arti": "Budi Pekerti", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1 },
-                    { "id": 3, "latin": "rukun", "arti": "Rukun / Damai", "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"], "level": 1 },
-                    { "id": 4, "latin": "suka", "arti": "Gembira", "sukuKata": ["ꦱꦸ", "ꦏ"], "level": 1 },
-                    { "id": 5, "latin": "duka", "arti": "Sedih", "sukuKata": ["ꦢꦸ", "ꦏ"], "level": 1 }
-                ];
+                self.wordDatabase = self.wordDatabaseFallback;
                 self.setupLevelTargetWords();
             });
     };
 
     this.setupLevelTargetWords = function() {
+        if (!self.wordDatabase || self.wordDatabase.length === 0) {
+            self.wordDatabase = self.wordDatabaseFallback;
+        }
+
         self.targetWords = self.wordDatabase.filter(function(item) {
-            return item.level === self.level || item.level === (self.level % 3) + 1;
+            return item.level === self.level || item.level === ((self.level - 1) % 3) + 1;
         });
 
         if (self.targetWords.length === 0) {
@@ -144,11 +146,11 @@ function TetrisGame() {
 
     this.getRandomAksaraSyllable = function() {
         var pool = [];
-        // Pull from target words
-        self.targetWords.forEach(function(item) {
-            if (item.sukuKata) pool = pool.concat(item.sukuKata);
-        });
-        // Filler syllables
+        if (self.targetWords) {
+            self.targetWords.forEach(function(item) {
+                if (item.sukuKata) pool = pool.concat(item.sukuKata);
+            });
+        }
         var fillers = ['ꦲ', 'ꦤ', 'ꦕ', 'ꦫ', 'ꦏ', 'ꦢ', 'ꦠ', 'ꦱ', 'ꦮ', 'ꦭ', 'ꦥ', 'ꦗ', 'ꦩ', 'ꦒ', 'ꦧ', 'ꦔ'];
         pool = pool.concat(fillers);
 
@@ -191,7 +193,7 @@ function TetrisGame() {
         self.nextAksara = self.getRandomAksaraSyllable();
         self.renderNextPreview();
 
-        var startCol = 3; // Center column
+        var startCol = 3;
         var startRow = 0;
 
         if (self.grid[startRow][startCol] !== null) {
@@ -294,17 +296,15 @@ function TetrisGame() {
         self.playSound('place');
         self.currentBlock = null;
 
-        // Check word formations horizontally & vertically
         self.checkWordMatches(function() {
             if (self.running) self.spawnBlock();
         });
     };
 
     this.checkWordMatches = function(callback) {
-        var matchedCells = []; // Array of {r, c}
+        var matchedCells = [];
         var matchedWords = [];
 
-        // 1. Horizontal Check
         for (var r = 0; r < self.areaY; r++) {
             var rowAksaraStr = '';
             var rowCells = [];
@@ -321,7 +321,6 @@ function TetrisGame() {
             self.evalAksaraSequence(rowAksaraStr, rowCells, matchedCells, matchedWords);
         }
 
-        // 2. Vertical Check
         for (var c = 0; c < self.areaX; c++) {
             var colAksaraStr = '';
             var colCells = [];
@@ -353,7 +352,6 @@ function TetrisGame() {
             var targetAksara = item.sukuKata ? item.sukuKata.join('') : (typeof transliterasiKalimat === 'function' ? transliterasiKalimat(item.latin) : item.latin);
 
             if (aksaraStr.includes(targetAksara)) {
-                // Collect cells matching target word
                 matchedWords.push(item);
                 self.completedWords.add(item.latin.toLowerCase());
 
@@ -365,14 +363,12 @@ function TetrisGame() {
     };
 
     this.highlightAndClearCells = function(matchedCells, matchedWords, callback) {
-        // Highlight matched cells
         matchedCells.forEach(function(cell) {
             if (self.grid[cell.r][cell.c] && self.grid[cell.r][cell.c].el) {
                 self.grid[cell.r][cell.c].el.classList.add('block-match');
             }
         });
 
-        // Add score
         matchedWords.forEach(function(word) {
             self.score += 1000 * self.level;
             self.wordsFound++;
@@ -382,7 +378,6 @@ function TetrisGame() {
         self.renderTargetWordList();
 
         setTimeout(function() {
-            // Remove element from DOM & clear grid
             var area = document.getElementById('tetris-area');
             matchedCells.forEach(function(cell) {
                 if (self.grid[cell.r][cell.c]) {
@@ -393,27 +388,21 @@ function TetrisGame() {
                 }
             });
 
-            // Apply gravity collapse
             self.applyGravity();
 
-            // Check level up condition
             if (self.completedWords.size >= self.targetWords.length) {
                 self.levelUp();
             }
 
-            // Recursive cascade check
             self.checkWordMatches(callback);
 
         }, 600);
     };
 
     this.applyGravity = function() {
-        var area = document.getElementById('tetris-area');
-
         for (var c = 0; c < self.areaX; c++) {
             for (var r = self.areaY - 1; r >= 0; r--) {
                 if (self.grid[r][c] === null) {
-                    // Find block above to drop down
                     for (var k = r - 1; k >= 0; k--) {
                         if (self.grid[k][c] !== null) {
                             self.grid[r][c] = self.grid[k][c];
@@ -439,9 +428,7 @@ function TetrisGame() {
     this.gameOver = function() {
         self.running = false;
         if (self.fallTimer) clearTimeout(self.fallTimer);
-        alert(' GAME OVER!
-Skor Akhir Anda: ' + self.score + '
-Kata Tertebak: ' + self.wordsFound);
+        alert('GAME OVER!\nSkor Akhir Anda: ' + self.score + '\nKata Tertebak: ' + self.wordsFound);
     };
 
     this.updateStatsUI = function() {
@@ -481,7 +468,6 @@ Kata Tertebak: ' + self.wordsFound);
     };
 }
 
-// Global instance
 var game = new TetrisGame();
 
 window.onload = function() {
@@ -496,7 +482,6 @@ window.onload = function() {
     document.getElementById('btn-download-json').onclick = function() { downloadJsonFile(); };
 };
 
-/* JSON Editor Modal Functions */
 function openJsonModal() {
     var modal = document.getElementById('json-modal');
     var textarea = document.getElementById('json-editor-textarea');
@@ -517,7 +502,7 @@ function saveJsonModal() {
         var updatedData = JSON.parse(textarea.value);
         game.wordDatabase = updatedData;
         game.setupLevelTargetWords();
-        alert(' Target Kata Berhasil Diperbarui!');
+        alert('Target Kata Berhasil Diperbarui!');
         closeJsonModal();
     } catch (e) {
         alert('❌ Format JSON tidak valid! Periksa kembali sintaksis JSON.');
