@@ -1,8 +1,8 @@
 /*
  * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris Engine)
  * FILE: tetris.js
- * DESCRIPTION: Engine Tetris Word Building dengan dukungan sandhangan mandiri,
- *              morfologi KBJ, pembacaan tetris.json, dan fallback offline.
+ * DESCRIPTION: Engine Word Building Tetris dengan balok presisi (hanya suku kata 
+ *              dari kata target yang belum tertebak yang akan turun secara acak).
  */
 
 function TetrisGame() {
@@ -157,28 +157,28 @@ function TetrisGame() {
         });
     };
 
+    // FUNGSI UTAMA: Mengambil balok acak HANYA dari kata target yang dibutuhkan
     this.getRandomAksaraSyllable = function() {
         var pool = [];
 
-        // 1. Suku kata dari kata target (bobot 3x lipat)
+        // Kumpulkan suku kata dari target kata yang BELUM selesai
         if (self.targetWords && self.targetWords.length > 0) {
             self.targetWords.forEach(function(item) {
-                if (item.sukuKata) {
-                    pool = pool.concat(item.sukuKata)
-                               .concat(item.sukuKata)
-                               .concat(item.sukuKata);
+                var isDone = self.completedWords.has(item.latin.toLowerCase());
+                if (!isDone && item.sukuKata && item.sukuKata.length > 0) {
+                    pool = pool.concat(item.sukuKata);
                 }
             });
         }
 
-        // 2. Sandhangan & Panyigeg Wanda mandiri beraksara dasar Ha
-        var sandhanganHa = ['ꦲꦶ', 'ꦲꦸ', 'ꦲꦺ', 'ꦲꦺꦴ', 'ꦲꦼ', 'ꦲꦂ', 'ꦲꦁ', 'ꦲꦃ', 'ꦲ꧀'];
+        // Jika semua kata dalam target sudah selesai, ambil dari semua kata target level ini
+        if (pool.length === 0 && self.targetWords && self.targetWords.length > 0) {
+            self.targetWords.forEach(function(item) {
+                if (item.sukuKata) pool = pool.concat(item.sukuKata);
+            });
+        }
 
-        // 3. Aksara nglegena biasa
-        var fillers = ['ꦲ', 'ꦤ', 'ꦕ', 'ꦫ', 'ꦏ', 'ꦢ', 'ꦠ', 'ꦱ', 'ꦮ', 'ꦭ', 'ꦥ', 'ꦗ', 'ꦩ', 'ꦒ', 'ꦧ', 'ꦔ'];
-
-        pool = pool.concat(sandhanganHa).concat(fillers);
-
+        // Ambil secara acak dari pool yang pasti berguna
         return pool[Math.floor(Math.random() * pool.length)];
     };
 
