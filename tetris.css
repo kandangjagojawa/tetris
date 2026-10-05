@@ -128,7 +128,7 @@ body {
 
 .word-item .word-aksara {
   font-family: var(--font-aksara);
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   color: var(--gold-primary);
   line-height: 1;
 }
@@ -211,7 +211,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 240px;
+  width: 360px;
   padding: 8px;
 }
 
@@ -282,7 +282,7 @@ body {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 4px;
-  width: 240px;
+  width: 360px;
   margin-top: 6px;
 }
 
