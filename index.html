@@ -8,30 +8,23 @@
 </head>
 <body>
 
-    <!-- Header App -->
     <header class="app-header">
         <h1 class="app-title-aksara">ꦒꦩꦼꦱ꧀ꦪꦸꦱꦸꦤ꧀ꦏꦠꦄꦏ꧀ꦱꦫꦗꦮ</h1>
         <div class="app-title-latin">Word Building Game • Aksara Jawa</div>
     </header>
 
-    <!-- Main Game Container -->
     <main class="game-container">
         
-        <!-- Left Panel: Target Words -->
         <section class="panel target-panel">
             <h2 class="panel-title">🎯 Target Kata</h2>
             <ul id="target-word-list" class="word-list">
-                <!-- Target words auto loaded from tetris.json -->
             </ul>
         </section>
 
-        <!-- Center Panel: Tetris Area -->
         <section class="panel board-panel">
             <div id="tetris-area">
-                <!-- Blocks land and align inside matrix -->
             </div>
 
-            <!-- Mobile Controls -->
             <div class="mobile-controls">
                 <button id="touch-left" class="touch-btn">◀</button>
                 <button id="touch-swap" class="touch-btn">🔄</button>
@@ -41,7 +34,6 @@
             </div>
         </section>
 
-        <!-- Right Panel: Stats & Controls -->
         <section class="panel stats-panel">
             <div class="stat-box">
                 <div class="stat-label">Skor</div>
@@ -61,7 +53,6 @@
             <div class="stat-box">
                 <div class="stat-label">Balok Berikutnya</div>
                 <div id="next-puzzle-box">
-                    <!-- Next puzzle block preview -->
                 </div>
             </div>
 
@@ -75,7 +66,6 @@
 
     </main>
 
-    <!-- Modal JSON Manager -->
     <div id="json-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 class="modal-title">⚙️ Editor Data Kata (tetris.json)</h3>
@@ -91,7 +81,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="kbj.js"></script>
     <script src="tetris.js"></script>
 </body>
