@@ -1,16 +1,16 @@
 /*
  * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris Engine)
  * FILE: tetris.js
- * UPDATE: Murni menggunakan tetris.json tanpa data cadangan internal.
+ * FIX: Penyesuaian unit grid 60px x 60px (6 Kolom x 8 Baris) sesuai tetris.css
  */
 
 function TetrisGame() {
     var self = this;
 
-    // Konfigurasi 6 Kolom x 12 Baris
-    this.unit = 40;     
-    this.areaX = 6;     
-    this.areaY = 12;    
+    // Konfigurasi Presisi (Match dengan tetris.css: 360px x 480px)
+    this.unit = 60;     // Ukuran grid 60px x 60px
+    this.areaX = 6;     // 6 Kolom (360px / 60px)
+    this.areaY = 8;     // 8 Baris (480px / 60px)
 
     // State Permainan
     this.score = 0;
@@ -88,7 +88,6 @@ function TetrisGame() {
         }
     };
 
-    // FUNGSI LOAD DATA: Murni dari tetris.json
     this.loadWordDatabase = function() {
         fetch('tetris.json')
             .then(function(res) { 
@@ -101,7 +100,6 @@ function TetrisGame() {
             })
             .catch(function(err) {
                 console.error('Error:', err);
-                alert('⚠️ Gagal memuat tetris.json!\nJalankan proyek menggunakan Web Server (Live Server, GitHub Pages, atau Vercel) agar file JSON dapat dibaca.');
             });
     };
 
@@ -196,7 +194,7 @@ function TetrisGame() {
         self.nextAksara = self.getRandomAksaraSyllable();
         self.renderNextPreview();
 
-        var startCol = 2;
+        var startCol = 2; // Kolom tengah (0..5)
         var startRow = 0;
 
         if (self.grid[startRow][startCol] !== null) {
@@ -208,10 +206,6 @@ function TetrisGame() {
         var el = document.createElement('div');
         el.className = 'block';
         el.innerText = currentAksara;
-        
-        if (currentAksara.length > 2) {
-            el.style.fontSize = '0.8rem';
-        }
 
         el.style.left = (startCol * self.unit) + 'px';
         el.style.top = (startRow * self.unit) + 'px';
@@ -232,9 +226,6 @@ function TetrisGame() {
         var div = document.createElement('div');
         div.className = 'block next';
         div.innerText = self.nextAksara;
-        if (self.nextAksara.length > 2) {
-            div.style.fontSize = '0.8rem';
-        }
         box.appendChild(div);
     };
 
@@ -287,11 +278,6 @@ function TetrisGame() {
         if (!self.currentBlock || self.paused) return;
         self.currentBlock.aksara = self.getRandomAksaraSyllable();
         self.currentBlock.el.innerText = self.currentBlock.aksara;
-        if (self.currentBlock.aksara.length > 2) {
-            self.currentBlock.el.style.fontSize = '0.8rem';
-        } else {
-            self.currentBlock.el.style.fontSize = '0.95rem';
-        }
     };
 
     this.updateBlockPos = function() {
@@ -321,6 +307,7 @@ function TetrisGame() {
         var matchedCells = [];
         var matchedWords = [];
 
+        // 1. Pindaian Horizontal
         for (var r = 0; r < self.areaY; r++) {
             var rowAksaraStr = '';
             var rowCells = [];
@@ -337,6 +324,7 @@ function TetrisGame() {
             self.evalAksaraSequence(rowAksaraStr, rowCells, matchedCells, matchedWords);
         }
 
+        // 2. Pindaian Vertikal
         for (var c = 0; c < self.areaX; c++) {
             var colAksaraStr = '';
             var colCells = [];
@@ -553,46 +541,4 @@ window.onload = function() {
     document.getElementById('btn-start').onclick = function() { game.start(); };
     document.getElementById('btn-pause').onclick = function() { game.pause(); };
     document.getElementById('btn-reset').onclick = function() { game.reset(); };
-    document.getElementById('btn-json').onclick = function() { openJsonModal(); };
-    document.getElementById('btn-close-json').onclick = function() { closeJsonModal(); };
-    document.getElementById('btn-save-json').onclick = function() { saveJsonModal(); };
-    document.getElementById('btn-download-json').onclick = function() { downloadJsonFile(); };
 };
-
-function openJsonModal() {
-    var modal = document.getElementById('json-modal');
-    var textarea = document.getElementById('json-editor-textarea');
-    if (modal && textarea) {
-        textarea.value = JSON.stringify(game.wordDatabase || [], null, 2);
-        modal.style.display = 'flex';
-    }
-}
-
-function closeJsonModal() {
-    var modal = document.getElementById('json-modal');
-    if (modal) modal.style.display = 'none';
-}
-
-function saveJsonModal() {
-    var textarea = document.getElementById('json-editor-textarea');
-    try {
-        var updatedData = JSON.parse(textarea.value);
-        game.wordDatabase = updatedData;
-        game.setupLevelTargetWords();
-        alert('Target Kata Berhasil Diperbarui!');
-        closeJsonModal();
-    } catch (e) {
-        alert('❌ Format JSON tidak valid! Periksa kembali sintaksis JSON.');
-    }
-}
-
-function downloadJsonFile() {
-    var textarea = document.getElementById('json-editor-textarea');
-    var blob = new Blob([textarea.value], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'tetris.json';
-    a.click();
-    URL.revokeObjectURL(url);
-}
