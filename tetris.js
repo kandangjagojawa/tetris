@@ -1,18 +1,18 @@
 /*
  * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris Engine)
  * FILE: tetris.js
- * UPDATE: 6 Kolom, Fit Aksara, Mobile Touch & Swipe Gesture, Fix Level-Up Freeze
+ * UPDATE: Ringkasan Target Kata (Tanpa Latin), Kecepatan Lambat (1300ms), Fit Aksara, Mobile Touch Control
  */
 
 function TetrisGame() {
     var self = this;
 
-    // Config 6 Kolom x 12 Baris
+    // Konfigurasi 6 Kolom x 12 Baris
     this.unit = 40;     // 40px per grid
     this.areaX = 6;     // 6 Kolom
     this.areaY = 12;    // 12 Baris
 
-    // Game state
+    // State Permainan
     this.score = 0;
     this.level = 1;
     this.wordsFound = 0;
@@ -28,23 +28,25 @@ function TetrisGame() {
     this.currentBlock = null;
     this.nextAksara = '';
     this.fallTimer = null;
-    this.speed = 800; // ms
+    
+    // Kecepatan jatuh diperlambat (1300ms / 1.3 detik per petak)
+    this.speed = 1300; 
 
     // Web Audio Synthesizer
     this.audioCtx = null;
 
     // Database Fallback
     this.wordDatabaseFallback = [
-        { "id": 1, "latin": "sabar", "arti": "Sabar / Menahan Diri", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1, "category": "Sifat Utami" },
-        { "id": 2, "latin": "budi", "arti": "Budi Pekerti / Akal", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1, "category": "Sifat Utami" },
-        { "id": 3, "latin": "rukun", "arti": "Rukun / Damai", "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"], "level": 1, "category": "Social" },
-        { "id": 4, "latin": "suka", "arti": "Gembira / Senang", "sukuKata": ["ꦱꦸ", "ꦏ"], "level": 1, "category": "Emosi" },
-        { "id": 5, "latin": "duka", "arti": "Sedih / Duka", "sukuKata": ["ꦢꦸ", "ꦏ"], "level": 1, "category": "Emosi" },
-        { "id": 6, "latin": "utama", "arti": "Utama / Terbaik", "sukuKata": ["ꦈ", "ꦠ", "ꦩ"], "level": 2, "category": "Keutamaan" },
-        { "id": 7, "latin": "karsa", "arti": "Kehendak / Niat", "sukuKata": ["ꦏꦂ", "ꦱ"], "level": 2, "category": "Sifat Utami" },
-        { "id": 8, "latin": "subur", "arti": "Subur / Makmur", "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"], "level": 2, "category": "Alam" },
-        { "id": 9, "latin": "segar", "arti": "Segar / Sehat", "sukuKata": ["ꦱꦼ", "ꦒꦂ"], "level": 2, "category": "Kesehatan" },
-        { "id": 10, "latin": "murni", "arti": "Suci / Murni", "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"], "level": 2, "category": "Sifat Utami" }
+        { "id": 1, "latin": "sabar", "arti": "Sabar", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1 },
+        { "id": 2, "latin": "budi", "arti": "Budi Pekerti", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1 },
+        { "id": 3, "latin": "rukun", "arti": "Rukun", "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"], "level": 1 },
+        { "id": 4, "latin": "suka", "arti": "Gembira", "sukuKata": ["ꦱꦸ", "ꦏ"], "level": 1 },
+        { "id": 5, "latin": "duka", "arti": "Sedih", "sukuKata": ["ꦢꦸ", "ꦏ"], "level": 1 },
+        { "id": 6, "latin": "utama", "arti": "Utama", "sukuKata": ["ꦈ", "ꦠ", "ꦩ"], "level": 2 },
+        { "id": 7, "latin": "karsa", "arti": "Kehendak", "sukuKata": ["ꦏꦂ", "ꦱ"], "level": 2 },
+        { "id": 8, "latin": "subur", "arti": "Subur", "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"], "level": 2 },
+        { "id": 9, "latin": "segar", "arti": "Segar", "sukuKata": ["ꦱꦼ", "ꦒꦂ"], "level": 2 },
+        { "id": 10, "latin": "murni", "arti": "Suci", "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"], "level": 2 }
     ];
 
     this.init = function() {
@@ -133,6 +135,7 @@ function TetrisGame() {
         self.renderTargetWordList();
     };
 
+    // Rendering Target Kata Ringkas (Hanya Aksara Jawa & Status, Tanpa Latin)
     this.renderTargetWordList = function() {
         var listEl = document.getElementById('target-word-list');
         if (!listEl) return;
@@ -146,17 +149,14 @@ function TetrisGame() {
             var aksaraJoined = item.sukuKata ? item.sukuKata.join('') : (typeof transliterasiKalimat === 'function' ? transliterasiKalimat(item.latin) : item.latin);
 
             li.innerHTML = 
-                '<div>' +
-                    '<div class="word-aksara">' + aksaraJoined + '</div>' +
-                    '<div class="word-latin">' + item.latin + ' (' + item.arti + ')</div>' +
-                '</div>' +
-                '<div class="status-icon">' + (isDone ? '✅' : '⏳') + '</div>';
+                '<span class="word-aksara">' + aksaraJoined + '</span>' +
+                '<span class="status-icon">' + (isDone ? '✅' : '⏳') + '</span>';
 
             listEl.appendChild(li);
         });
     };
 
-    // Ambil balok HANYA dari kata target yang BELUM tertebak
+    // Ambil balok HANYA dari suku kata target yang belum tertebak
     this.getRandomAksaraSyllable = function() {
         var pool = [];
 
@@ -214,7 +214,7 @@ function TetrisGame() {
         self.nextAksara = self.getRandomAksaraSyllable();
         self.renderNextPreview();
 
-        var startCol = 2; // Kolom tengah untuk 6 kolom (0,1, [2], 3,4,5)
+        var startCol = 2; // Kolom tengah (0..5)
         var startRow = 0;
 
         if (self.grid[startRow][startCol] !== null) {
@@ -226,6 +226,12 @@ function TetrisGame() {
         var el = document.createElement('div');
         el.className = 'block';
         el.innerText = currentAksara;
+        
+        // Penyesuaian ukuran font dinamis jika aksara memiliki > 2 karakter/sandhangan panjang
+        if (currentAksara.length > 2) {
+            el.style.fontSize = '0.8rem';
+        }
+
         el.style.left = (startCol * self.unit) + 'px';
         el.style.top = (startRow * self.unit) + 'px';
         area.appendChild(el);
@@ -245,6 +251,9 @@ function TetrisGame() {
         var div = document.createElement('div');
         div.className = 'block next';
         div.innerText = self.nextAksara;
+        if (self.nextAksara.length > 2) {
+            div.style.fontSize = '0.8rem';
+        }
         box.appendChild(div);
     };
 
@@ -253,7 +262,9 @@ function TetrisGame() {
         if (!self.running || self.paused) return;
 
         self.moveDown();
-        self.speed = Math.max(200, 800 - (self.level - 1) * 100);
+        
+        // Kecepatan diperlambat (Base 1300ms, berkurang bertahap tiap level)
+        self.speed = Math.max(500, 1300 - (self.level - 1) * 150);
         self.fallTimer = setTimeout(self.runLoop, self.speed);
     };
 
@@ -297,6 +308,11 @@ function TetrisGame() {
         if (!self.currentBlock || self.paused) return;
         self.currentBlock.aksara = self.getRandomAksaraSyllable();
         self.currentBlock.el.innerText = self.currentBlock.aksara;
+        if (self.currentBlock.aksara.length > 2) {
+            self.currentBlock.el.style.fontSize = '0.8rem';
+        } else {
+            self.currentBlock.el.style.fontSize = '0.95rem';
+        }
     };
 
     this.updateBlockPos = function() {
@@ -416,7 +432,7 @@ function TetrisGame() {
             // PENGECEKAN NAIK LEVEL
             if (self.completedWords.size >= self.targetWords.length) {
                 self.levelUp();
-                return; // Berhenti agar tidak macet/freeze
+                return; 
             }
 
             self.checkWordMatches(callback);
@@ -441,14 +457,13 @@ function TetrisGame() {
         }
     };
 
-    // FIX LEVEL UP FREEZE
+    // NAIK LEVEL TANPA MACET (RESET TIMER & RE-SPAWN)
     this.levelUp = function() {
         if (self.fallTimer) clearTimeout(self.fallTimer);
         self.playSound('levelup');
         self.level++;
         self.completedWords.clear();
 
-        // Bersihkan area visual dan matriks
         var area = document.getElementById('tetris-area');
         if (area) area.innerHTML = '';
         self.initBoardMatrix();
@@ -493,7 +508,7 @@ function TetrisGame() {
         });
     };
 
-    // KONTROL LAYAR SENTUH HP & SWIPE GESTURE
+    // KONTROL SENTUH HP DENGAN RESPONSIVITAS TINGGI
     this.setupTouchListeners = function() {
         var btnLeft = document.getElementById('touch-left');
         var btnRight = document.getElementById('touch-right');
@@ -519,12 +534,12 @@ function TetrisGame() {
         bindTouch(btnDrop, function() { self.hardDrop(); });
         bindTouch(btnSwap, function() { self.cycleAksara(); });
 
-        // Gesture Usap (Swipe) Langsung di Papan Permainan
+        // Touch Gesture Swipe
         var area = document.getElementById('tetris-area');
         if (!area) return;
 
         var startX = 0, startY = 0;
-        var threshold = 25;
+        var threshold = 20;
 
         area.addEventListener('touchstart', function(e) {
             if (e.touches.length === 1) {
@@ -546,9 +561,9 @@ function TetrisGame() {
             } else {
                 if (Math.abs(diffY) > threshold) {
                     if (diffY > 0) self.moveDown();
-                    else self.cycleAksara(); // Swipe Atas = Ganti Aksara
+                    else self.cycleAksara();
                 } else {
-                    self.cycleAksara(); // Tap = Ganti Aksara
+                    self.cycleAksara();
                 }
             }
             startX = 0;
