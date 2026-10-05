@@ -1,27 +1,40 @@
+/*
+ * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris Engine)
+ * FILE: tetris.js
+ * DESCRIPTION: Engine Tetris Word Building dengan dukungan sandhangan mandiri,
+ *              morfologi KBJ, pembacaan tetris.json, dan fallback offline.
+ */
+
 function TetrisGame() {
     var self = this;
 
-    this.unit = 40;     
-    this.areaX = 8;     
-    this.areaY = 12;    
+    // Konfigurasi Papan Game
+    this.unit = 40;     // Ukuran grid 40px x 40px
+    this.areaX = 8;     // 8 Kolom
+    this.areaY = 12;    // 12 Baris
 
+    // State Permainan
     this.score = 0;
     this.level = 1;
     this.wordsFound = 0;
     this.paused = false;
     this.running = false;
 
+    // Data Kata & Papan Matriks
     this.targetWords = [];
     this.completedWords = new Set();
-    this.grid = []; 
+    this.grid = []; // Matriks 12x8 menyimpan null atau { element, aksara }
 
+    // Balok Aktif
     this.currentBlock = null;
     this.nextAksara = '';
     this.fallTimer = null;
-    this.speed = 800; 
+    this.speed = 800; // ms
 
+    // Web Audio Synthesizer
     this.audioCtx = null;
 
+    // Database Fallback jika tetris.json diblokir oleh CORS lokal (file://)
     this.wordDatabaseFallback = [
         { "id": 1, "latin": "sabar", "arti": "Sabar / Menahan Diri", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1, "category": "Sifat Utami" },
         { "id": 2, "latin": "budi", "arti": "Budi Pekerti / Akal", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1, "category": "Sifat Utami" },
@@ -146,13 +159,25 @@ function TetrisGame() {
 
     this.getRandomAksaraSyllable = function() {
         var pool = [];
-        if (self.targetWords) {
+
+        // 1. Suku kata dari kata target (bobot 3x lipat)
+        if (self.targetWords && self.targetWords.length > 0) {
             self.targetWords.forEach(function(item) {
-                if (item.sukuKata) pool = pool.concat(item.sukuKata);
+                if (item.sukuKata) {
+                    pool = pool.concat(item.sukuKata)
+                               .concat(item.sukuKata)
+                               .concat(item.sukuKata);
+                }
             });
         }
+
+        // 2. Sandhangan & Panyigeg Wanda mandiri beraksara dasar Ha
+        var sandhanganHa = ['ꦲꦶ', 'ꦲꦸ', 'ꦲꦺ', 'ꦲꦺꦴ', 'ꦲꦼ', 'ꦲꦂ', 'ꦲꦁ', 'ꦲꦃ', 'ꦲ꧀'];
+
+        // 3. Aksara nglegena biasa
         var fillers = ['ꦲ', 'ꦤ', 'ꦕ', 'ꦫ', 'ꦏ', 'ꦢ', 'ꦠ', 'ꦱ', 'ꦮ', 'ꦭ', 'ꦥ', 'ꦗ', 'ꦩ', 'ꦒ', 'ꦧ', 'ꦔ'];
-        pool = pool.concat(fillers);
+
+        pool = pool.concat(sandhanganHa).concat(fillers);
 
         return pool[Math.floor(Math.random() * pool.length)];
     };
@@ -305,6 +330,7 @@ function TetrisGame() {
         var matchedCells = [];
         var matchedWords = [];
 
+        // 1. Pindaian Horizontal
         for (var r = 0; r < self.areaY; r++) {
             var rowAksaraStr = '';
             var rowCells = [];
@@ -321,6 +347,7 @@ function TetrisGame() {
             self.evalAksaraSequence(rowAksaraStr, rowCells, matchedCells, matchedWords);
         }
 
+        // 2. Pindaian Vertikal
         for (var c = 0; c < self.areaX; c++) {
             var colAksaraStr = '';
             var colCells = [];
@@ -468,6 +495,7 @@ function TetrisGame() {
     };
 }
 
+// Inisialisasi Instance Global Game
 var game = new TetrisGame();
 
 window.onload = function() {
@@ -482,6 +510,7 @@ window.onload = function() {
     document.getElementById('btn-download-json').onclick = function() { downloadJsonFile(); };
 };
 
+/* Fungsi Editor Modal JSON */
 function openJsonModal() {
     var modal = document.getElementById('json-modal');
     var textarea = document.getElementById('json-editor-textarea');
