@@ -1,16 +1,16 @@
 /*
  * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris Engine)
  * FILE: tetris.js
- * UPDATE: Ringkasan Target Kata (Tanpa Latin), Kecepatan Lambat (1300ms), Fit Aksara, Mobile Touch Control
+ * UPDATE: Murni menggunakan tetris.json tanpa data cadangan internal.
  */
 
 function TetrisGame() {
     var self = this;
 
     // Konfigurasi 6 Kolom x 12 Baris
-    this.unit = 40;     // 40px per grid
-    this.areaX = 6;     // 6 Kolom
-    this.areaY = 12;    // 12 Baris
+    this.unit = 40;     
+    this.areaX = 6;     
+    this.areaY = 12;    
 
     // State Permainan
     this.score = 0;
@@ -20,6 +20,7 @@ function TetrisGame() {
     this.running = false;
 
     // Data Kata & Matriks Papan
+    this.wordDatabase = [];
     this.targetWords = [];
     this.completedWords = new Set();
     this.grid = []; 
@@ -28,26 +29,10 @@ function TetrisGame() {
     this.currentBlock = null;
     this.nextAksara = '';
     this.fallTimer = null;
-    
-    // Kecepatan jatuh diperlambat (1300ms / 1.3 detik per petak)
-    this.speed = 1300; 
+    this.speed = 1300; // 1.3 detik per petak
 
     // Web Audio Synthesizer
     this.audioCtx = null;
-
-    // Database Fallback
-    this.wordDatabaseFallback = [
-        { "id": 1, "latin": "sabar", "arti": "Sabar", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1 },
-        { "id": 2, "latin": "budi", "arti": "Budi Pekerti", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1 },
-        { "id": 3, "latin": "rukun", "arti": "Rukun", "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"], "level": 1 },
-        { "id": 4, "latin": "suka", "arti": "Gembira", "sukuKata": ["ꦱꦸ", "ꦏ"], "level": 1 },
-        { "id": 5, "latin": "duka", "arti": "Sedih", "sukuKata": ["ꦢꦸ", "ꦏ"], "level": 1 },
-        { "id": 6, "latin": "utama", "arti": "Utama", "sukuKata": ["ꦈ", "ꦠ", "ꦩ"], "level": 2 },
-        { "id": 7, "latin": "karsa", "arti": "Kehendak", "sukuKata": ["ꦏꦂ", "ꦱ"], "level": 2 },
-        { "id": 8, "latin": "subur", "arti": "Subur", "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"], "level": 2 },
-        { "id": 9, "latin": "segar", "arti": "Segar", "sukuKata": ["ꦱꦼ", "ꦒꦂ"], "level": 2 },
-        { "id": 10, "latin": "murni", "arti": "Suci", "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"], "level": 2 }
-    ];
 
     this.init = function() {
         self.initBoardMatrix();
@@ -103,10 +88,11 @@ function TetrisGame() {
         }
     };
 
+    // FUNGSI LOAD DATA: Murni dari tetris.json
     this.loadWordDatabase = function() {
         fetch('tetris.json')
             .then(function(res) { 
-                if (!res.ok) throw new Error('File fetch failed');
+                if (!res.ok) throw new Error('Gagal memuat file tetris.json');
                 return res.json(); 
             })
             .then(function(data) {
@@ -114,18 +100,16 @@ function TetrisGame() {
                 self.setupLevelTargetWords();
             })
             .catch(function(err) {
-                self.wordDatabase = self.wordDatabaseFallback;
-                self.setupLevelTargetWords();
+                console.error('Error:', err);
+                alert('⚠️ Gagal memuat tetris.json!\nJalankan proyek menggunakan Web Server (Live Server, GitHub Pages, atau Vercel) agar file JSON dapat dibaca.');
             });
     };
 
     this.setupLevelTargetWords = function() {
-        if (!self.wordDatabase || self.wordDatabase.length === 0) {
-            self.wordDatabase = self.wordDatabaseFallback;
-        }
+        if (!self.wordDatabase || self.wordDatabase.length === 0) return;
 
         self.targetWords = self.wordDatabase.filter(function(item) {
-            return item.level === self.level || item.level === ((self.level - 1) % 3) + 1;
+            return item.level === self.level || item.level === ((self.level - 1) % 2) + 1;
         });
 
         if (self.targetWords.length === 0) {
@@ -135,7 +119,6 @@ function TetrisGame() {
         self.renderTargetWordList();
     };
 
-    // Rendering Target Kata Ringkas (Hanya Aksara Jawa & Status, Tanpa Latin)
     this.renderTargetWordList = function() {
         var listEl = document.getElementById('target-word-list');
         if (!listEl) return;
@@ -146,7 +129,7 @@ function TetrisGame() {
             var li = document.createElement('li');
             li.className = 'word-item' + (isDone ? ' completed' : '');
             
-            var aksaraJoined = item.sukuKata ? item.sukuKata.join('') : (typeof transliterasiKalimat === 'function' ? transliterasiKalimat(item.latin) : item.latin);
+            var aksaraJoined = item.sukuKata ? item.sukuKata.join('') : item.latin;
 
             li.innerHTML = 
                 '<span class="word-aksara">' + aksaraJoined + '</span>' +
@@ -156,7 +139,6 @@ function TetrisGame() {
         });
     };
 
-    // Ambil balok HANYA dari suku kata target yang belum tertebak
     this.getRandomAksaraSyllable = function() {
         var pool = [];
 
@@ -214,7 +196,7 @@ function TetrisGame() {
         self.nextAksara = self.getRandomAksaraSyllable();
         self.renderNextPreview();
 
-        var startCol = 2; // Kolom tengah (0..5)
+        var startCol = 2;
         var startRow = 0;
 
         if (self.grid[startRow][startCol] !== null) {
@@ -227,7 +209,6 @@ function TetrisGame() {
         el.className = 'block';
         el.innerText = currentAksara;
         
-        // Penyesuaian ukuran font dinamis jika aksara memiliki > 2 karakter/sandhangan panjang
         if (currentAksara.length > 2) {
             el.style.fontSize = '0.8rem';
         }
@@ -262,8 +243,6 @@ function TetrisGame() {
         if (!self.running || self.paused) return;
 
         self.moveDown();
-        
-        // Kecepatan diperlambat (Base 1300ms, berkurang bertahap tiap level)
         self.speed = Math.max(500, 1300 - (self.level - 1) * 150);
         self.fallTimer = setTimeout(self.runLoop, self.speed);
     };
@@ -342,7 +321,6 @@ function TetrisGame() {
         var matchedCells = [];
         var matchedWords = [];
 
-        // 1. Pindaian Horizontal
         for (var r = 0; r < self.areaY; r++) {
             var rowAksaraStr = '';
             var rowCells = [];
@@ -359,7 +337,6 @@ function TetrisGame() {
             self.evalAksaraSequence(rowAksaraStr, rowCells, matchedCells, matchedWords);
         }
 
-        // 2. Pindaian Vertikal
         for (var c = 0; c < self.areaX; c++) {
             var colAksaraStr = '';
             var colCells = [];
@@ -388,7 +365,7 @@ function TetrisGame() {
         if (!aksaraStr || cellList.length < 2) return;
 
         self.targetWords.forEach(function(item) {
-            var targetAksara = item.sukuKata ? item.sukuKata.join('') : (typeof transliterasiKalimat === 'function' ? transliterasiKalimat(item.latin) : item.latin);
+            var targetAksara = item.sukuKata ? item.sukuKata.join('') : item.latin;
 
             if (aksaraStr.includes(targetAksara)) {
                 matchedWords.push(item);
@@ -429,7 +406,6 @@ function TetrisGame() {
 
             self.applyGravity();
 
-            // PENGECEKAN NAIK LEVEL
             if (self.completedWords.size >= self.targetWords.length) {
                 self.levelUp();
                 return; 
@@ -457,7 +433,6 @@ function TetrisGame() {
         }
     };
 
-    // NAIK LEVEL TANPA MACET (RESET TIMER & RE-SPAWN)
     this.levelUp = function() {
         if (self.fallTimer) clearTimeout(self.fallTimer);
         self.playSound('levelup');
@@ -508,7 +483,6 @@ function TetrisGame() {
         });
     };
 
-    // KONTROL SENTUH HP DENGAN RESPONSIVITAS TINGGI
     this.setupTouchListeners = function() {
         var btnLeft = document.getElementById('touch-left');
         var btnRight = document.getElementById('touch-right');
@@ -534,7 +508,6 @@ function TetrisGame() {
         bindTouch(btnDrop, function() { self.hardDrop(); });
         bindTouch(btnSwap, function() { self.cycleAksara(); });
 
-        // Touch Gesture Swipe
         var area = document.getElementById('tetris-area');
         if (!area) return;
 
