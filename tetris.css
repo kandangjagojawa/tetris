@@ -49,7 +49,7 @@ body {
   border-bottom: 1px solid var(--gold-primary);
   padding-bottom: 4px;
   width: 100%;
-  max-width: 240px;
+  max-width: 360px;
 }
 
 .app-title-aksara {
@@ -142,7 +142,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 240px;
+  width: 360px;
   background: transparent;
   border: none;
   padding: 0;
@@ -150,13 +150,13 @@ body {
 }
 
 #tetris-area {
-  width: 240px; /* 6 kolom x 40px */
-  height: 480px; /* 12 baris x 40px */
+  width: 360px; /* 6 kolom x 60px */
+  height: 480px; /* 8 baris x 60px */
   background-color: var(--bg-board);
   background-image: 
     linear-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-size: 60px 60px;
   border: 2px solid var(--gold-primary);
   border-radius: 6px;
   position: relative;
@@ -167,8 +167,8 @@ body {
 
 /* Balok Tetris & Fit Aksara */
 .block {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   position: absolute;
   background: linear-gradient(135deg, #7A191B 0%, #4A0E12 100%);
   border: 1.5px solid var(--gold-primary);
