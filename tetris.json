@@ -1,82 +1,12 @@
 [
-  {
-    "id": 1,
-    "latin": "sabar",
-    "arti": "Sabar / Menahan Diri",
-    "sukuKata": ["ꦱ", "ꦧꦂ"],
-    "level": 1,
-    "category": "Sifat Utami"
-  },
-  {
-    "id": 2,
-    "latin": "budi",
-    "arti": "Budi Pekerti / Akal",
-    "sukuKata": ["ꦧꦸ", "ꦢꦶ"],
-    "level": 1,
-    "category": "Sifat Utami"
-  },
-  {
-    "id": 3,
-    "latin": "rukun",
-    "arti": "Rukun / Damai",
-    "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"],
-    "level": 1,
-    "category": "Social"
-  },
-  {
-    "id": 4,
-    "latin": "suka",
-    "arti": "Gembira / Senang",
-    "sukuKata": ["ꦱꦸ", "ꦏ"],
-    "level": 1,
-    "category": "Emosi"
-  },
-  {
-    "id": 5,
-    "latin": "duka",
-    "arti": "Sedih / Duka",
-    "sukuKata": ["ꦢꦸ", "ꦏ"],
-    "level": 1,
-    "category": "Emosi"
-  },
-  {
-    "id": 6,
-    "latin": "utama",
-    "arti": "Utama / Terbaik",
-    "sukuKata": ["ꦈ", "ꦠ", "ꦩ"],
-    "level": 2,
-    "category": "Keutamaan"
-  },
-  {
-    "id": 7,
-    "latin": "karsa",
-    "arti": "Kehendak / Niat",
-    "sukuKata": ["ꦏꦂ", "ꦱ"],
-    "level": 2,
-    "category": "Sifat Utami"
-  },
-  {
-    "id": 8,
-    "latin": "subur",
-    "arti": "Subur / Makmur",
-    "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"],
-    "level": 2,
-    "category": "Alam"
-  },
-  {
-    "id": 9,
-    "latin": "segar",
-    "arti": "Segar / Sehat",
-    "sukuKata": ["ꦱꦼ", "ꦒꦂ"],
-    "level": 2,
-    "category": "Kesehatan"
-  },
-  {
-    "id": 10,
-    "latin": "murni",
-    "arti": "Suci / Murni",
-    "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"],
-    "level": 2,
-    "category": "Sifat Utami"
-  }
+  { "latin": "sabar", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1 },
+  { "latin": "budi", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1 },
+  { "latin": "rukun", "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"], "level": 1 },
+  { "latin": "suka", "sukuKata": ["ꦱꦸ", "ꦏ"], "level": 1 },
+  { "latin": "duka", "sukuKata": ["ꦢꦸ", "ꦏ"], "level": 1 },
+  { "latin": "utama", "sukuKata": ["ꦈ", "ꦠ", "ꦩ"], "level": 2 },
+  { "latin": "karsa", "sukuKata": ["ꦏꦂ", "ꦱ"], "level": 2 },
+  { "latin": "subur", "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"], "level": 2 },
+  { "latin": "segar", "sukuKata": ["ꦱꦼ", "ꦒꦂ"], "level": 2 },
+  { "latin": "murni", "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"], "level": 2 }
 ]
