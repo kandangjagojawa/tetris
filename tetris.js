@@ -1,29 +1,28 @@
 /*
  * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris Engine)
  * FILE: tetris.js
- * DESCRIPTION: Engine Word Building Tetris dengan balok presisi (hanya suku kata 
- *              dari kata target yang belum tertebak yang akan turun secara acak).
+ * UPDATE: 6 Kolom, Fit Aksara, Mobile Touch & Swipe Gesture, Fix Level-Up Freeze
  */
 
 function TetrisGame() {
     var self = this;
 
-    // Konfigurasi Papan Game
-    this.unit = 40;     // Ukuran grid 40px x 40px
-    this.areaX = 8;     // 8 Kolom
+    // Config 6 Kolom x 12 Baris
+    this.unit = 40;     // 40px per grid
+    this.areaX = 6;     // 6 Kolom
     this.areaY = 12;    // 12 Baris
 
-    // State Permainan
+    // Game state
     this.score = 0;
     this.level = 1;
     this.wordsFound = 0;
     this.paused = false;
     this.running = false;
 
-    // Data Kata & Papan Matriks
+    // Data Kata & Matriks Papan
     this.targetWords = [];
     this.completedWords = new Set();
-    this.grid = []; // Matriks 12x8 menyimpan null atau { element, aksara }
+    this.grid = []; 
 
     // Balok Aktif
     this.currentBlock = null;
@@ -34,7 +33,7 @@ function TetrisGame() {
     // Web Audio Synthesizer
     this.audioCtx = null;
 
-    // Database Fallback jika tetris.json diblokir oleh CORS lokal (file://)
+    // Database Fallback
     this.wordDatabaseFallback = [
         { "id": 1, "latin": "sabar", "arti": "Sabar / Menahan Diri", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1, "category": "Sifat Utami" },
         { "id": 2, "latin": "budi", "arti": "Budi Pekerti / Akal", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1, "category": "Sifat Utami" },
@@ -157,11 +156,10 @@ function TetrisGame() {
         });
     };
 
-    // FUNGSI UTAMA: Mengambil balok acak HANYA dari kata target yang dibutuhkan
+    // Ambil balok HANYA dari kata target yang BELUM tertebak
     this.getRandomAksaraSyllable = function() {
         var pool = [];
 
-        // Kumpulkan suku kata dari target kata yang BELUM selesai
         if (self.targetWords && self.targetWords.length > 0) {
             self.targetWords.forEach(function(item) {
                 var isDone = self.completedWords.has(item.latin.toLowerCase());
@@ -171,14 +169,12 @@ function TetrisGame() {
             });
         }
 
-        // Jika semua kata dalam target sudah selesai, ambil dari semua kata target level ini
         if (pool.length === 0 && self.targetWords && self.targetWords.length > 0) {
             self.targetWords.forEach(function(item) {
                 if (item.sukuKata) pool = pool.concat(item.sukuKata);
             });
         }
 
-        // Ambil secara acak dari pool yang pasti berguna
         return pool[Math.floor(Math.random() * pool.length)];
     };
 
@@ -218,7 +214,7 @@ function TetrisGame() {
         self.nextAksara = self.getRandomAksaraSyllable();
         self.renderNextPreview();
 
-        var startCol = 3;
+        var startCol = 2; // Kolom tengah untuk 6 kolom (0,1, [2], 3,4,5)
         var startRow = 0;
 
         if (self.grid[startRow][startCol] !== null) {
@@ -417,8 +413,10 @@ function TetrisGame() {
 
             self.applyGravity();
 
+            // PENGECEKAN NAIK LEVEL
             if (self.completedWords.size >= self.targetWords.length) {
                 self.levelUp();
+                return; // Berhenti agar tidak macet/freeze
             }
 
             self.checkWordMatches(callback);
@@ -443,13 +441,28 @@ function TetrisGame() {
         }
     };
 
+    // FIX LEVEL UP FREEZE
     this.levelUp = function() {
+        if (self.fallTimer) clearTimeout(self.fallTimer);
         self.playSound('levelup');
         self.level++;
         self.completedWords.clear();
+
+        // Bersihkan area visual dan matriks
+        var area = document.getElementById('tetris-area');
+        if (area) area.innerHTML = '';
+        self.initBoardMatrix();
+
         self.setupLevelTargetWords();
         self.updateStatsUI();
+
         alert('🎉 SELAMAT! Anda berhasil menyelesaikan Level ' + (self.level - 1) + '! Lanjut ke Level ' + self.level);
+
+        self.running = true;
+        self.paused = false;
+        self.nextAksara = self.getRandomAksaraSyllable();
+        self.spawnBlock();
+        self.runLoop();
     };
 
     this.gameOver = function() {
@@ -480,6 +493,7 @@ function TetrisGame() {
         });
     };
 
+    // KONTROL LAYAR SENTUH HP & SWIPE GESTURE
     this.setupTouchListeners = function() {
         var btnLeft = document.getElementById('touch-left');
         var btnRight = document.getElementById('touch-right');
@@ -487,15 +501,62 @@ function TetrisGame() {
         var btnDrop = document.getElementById('touch-drop');
         var btnSwap = document.getElementById('touch-swap');
 
-        if (btnLeft) btnLeft.onclick = function() { self.moveLeft(); };
-        if (btnRight) btnRight.onclick = function() { self.moveRight(); };
-        if (btnDown) btnDown.onclick = function() { self.moveDown(); };
-        if (btnDrop) btnDrop.onclick = function() { self.hardDrop(); };
-        if (btnSwap) btnSwap.onclick = function() { self.cycleAksara(); };
+        function bindTouch(el, action) {
+            if (!el) return;
+            el.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                action();
+            }, { passive: false });
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                action();
+            });
+        }
+
+        bindTouch(btnLeft, function() { self.moveLeft(); });
+        bindTouch(btnRight, function() { self.moveRight(); });
+        bindTouch(btnDown, function() { self.moveDown(); });
+        bindTouch(btnDrop, function() { self.hardDrop(); });
+        bindTouch(btnSwap, function() { self.cycleAksara(); });
+
+        // Gesture Usap (Swipe) Langsung di Papan Permainan
+        var area = document.getElementById('tetris-area');
+        if (!area) return;
+
+        var startX = 0, startY = 0;
+        var threshold = 25;
+
+        area.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        area.addEventListener('touchend', function(e) {
+            if (!startX || !startY || e.changedTouches.length === 0) return;
+            var diffX = e.changedTouches[0].clientX - startX;
+            var diffY = e.changedTouches[0].clientY - startY;
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > threshold) {
+                    if (diffX > 0) self.moveRight();
+                    else self.moveLeft();
+                }
+            } else {
+                if (Math.abs(diffY) > threshold) {
+                    if (diffY > 0) self.moveDown();
+                    else self.cycleAksara(); // Swipe Atas = Ganti Aksara
+                } else {
+                    self.cycleAksara(); // Tap = Ganti Aksara
+                }
+            }
+            startX = 0;
+            startY = 0;
+        }, { passive: true });
     };
 }
 
-// Inisialisasi Instance Global Game
 var game = new TetrisGame();
 
 window.onload = function() {
@@ -510,7 +571,6 @@ window.onload = function() {
     document.getElementById('btn-download-json').onclick = function() { downloadJsonFile(); };
 };
 
-/* Fungsi Editor Modal JSON */
 function openJsonModal() {
     var modal = document.getElementById('json-modal');
     var textarea = document.getElementById('json-editor-textarea');
