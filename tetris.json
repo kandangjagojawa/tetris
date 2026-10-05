@@ -1,12 +1,12 @@
 [
   { "latin": "sabar", "sukuKata": ["ꦱ", "ꦧꦂ"], "level": 1 },
   { "latin": "budi", "sukuKata": ["ꦧꦸ", "ꦢꦶ"], "level": 1 },
-  { "latin": "rukun", "sukuKata": ["ꦫꦸ", "ꦏꦸꦤ꧀"], "level": 1 },
+  { "latin": "tuku", "sukuKata": ["ꦠꦸ", "ꦏꦸ"], "level": 1 },
   { "latin": "suka", "sukuKata": ["ꦱꦸ", "ꦏ"], "level": 1 },
   { "latin": "duka", "sukuKata": ["ꦢꦸ", "ꦏ"], "level": 1 },
-  { "latin": "utama", "sukuKata": ["ꦈ", "ꦠ", "ꦩ"], "level": 2 },
+  { "latin": "utama", "sukuKata": ["ꦲꦸ", "ꦠ", "ꦩ"], "level": 2 },
   { "latin": "karsa", "sukuKata": ["ꦏꦂ", "ꦱ"], "level": 2 },
   { "latin": "subur", "sukuKata": ["ꦱꦸ", "ꦧꦸꦂ"], "level": 2 },
   { "latin": "segar", "sukuKata": ["ꦱꦼ", "ꦒꦂ"], "level": 2 },
-  { "latin": "murni", "sukuKata": ["ꦩꦸ", "ꦂ", "ꦤꦶ"], "level": 2 }
+  { "latin": "murni", "sukuKata": ["ꦩꦸꦂ", "ꦤꦶ"], "level": 2 }
 ]
