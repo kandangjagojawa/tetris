@@ -1,6 +1,6 @@
 /* 
  * PROJECT: Game Menyusun Kata Aksara Jawa (Word Building Tetris)
- * STYLE: tetris.css (UI Mobile Max Width, Fit Aksara, Compact Target List)
+ * STYLE: tetris.css (Canvas Mobile Flush & Clean Layout)
  */
 
 @font-face {
@@ -38,29 +38,29 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 5px; /* Maksimalkan area layar HP */
+  padding: 6px 2px;
   touch-action: manipulation;
 }
 
 /* Header */
 .app-header {
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   border-bottom: 1px solid var(--gold-primary);
   padding-bottom: 4px;
   width: 100%;
-  max-width: 500px;
+  max-width: 240px;
 }
 
 .app-title-aksara {
   font-family: var(--font-aksara);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: var(--gold-primary);
   line-height: 1.1;
 }
 
 .app-title-latin {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   letter-spacing: 1px;
   color: var(--gold-light);
   text-transform: uppercase;
@@ -71,43 +71,42 @@ body {
 .game-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   width: 100%;
-  max-width: 500px;
+  max-width: 240px;
 }
 
 .panel {
   background: var(--bg-card);
   border: 1px solid var(--gold-primary);
   border-radius: 8px;
-  padding: 10px;
-  width: 100%;
+  padding: 8px;
+  width: 240px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Panel Target Kata (Ringkas & Tampak Semua) */
+/* Panel Target Kata */
 .target-panel {
-  width: 100%;
-  padding: 8px;
+  width: 240px;
+  padding: 6px;
 }
 
 .panel-title {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--gold-light);
   border-bottom: 1px solid var(--gold-dark);
-  padding-bottom: 4px;
+  padding-bottom: 3px;
   margin-bottom: 6px;
   text-align: center;
   font-weight: bold;
 }
 
-/* Target kata disusun mendatar flex-wrap tanpa scrollbar */
 .word-list {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   justify-content: center;
   align-items: center;
 }
@@ -115,11 +114,11 @@ body {
 .word-item {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(212, 175, 55, 0.4);
-  border-radius: 6px;
-  padding: 4px 8px;
+  border-radius: 5px;
+  padding: 3px 6px;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .word-item.completed {
@@ -129,21 +128,25 @@ body {
 
 .word-item .word-aksara {
   font-family: var(--font-aksara);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--gold-primary);
   line-height: 1;
 }
 
 .word-item .status-icon {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
-/* Board Panel (6 Kolom x 12 Baris) */
+/* Board Panel: Tanpa Ruang Kosong Samping */
 .board-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: 240px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
 }
 
 #tetris-area {
@@ -154,11 +157,11 @@ body {
     linear-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
   background-size: 40px 40px;
-  border: 3px solid var(--gold-primary);
-  border-radius: 8px;
+  border: 2px solid var(--gold-primary);
+  border-radius: 6px;
   position: relative;
-  overflow: visible; /* Aksara tidak terpotong tepi board */
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+  overflow: visible;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
   touch-action: none;
 }
 
@@ -172,14 +175,14 @@ body {
   border-radius: 5px;
   color: var(--gold-light);
   font-family: var(--font-aksara);
-  font-size: 0.95rem; /* Ukuran presisi agar aksara + sandhangan pas di dalam kotak */
+  font-size: 0.95rem;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   white-space: nowrap;
-  overflow: visible; /* Mencegah sandhangan/pasangan terpotong */
+  overflow: visible;
   padding: 0;
   text-shadow: 0 0 3px rgba(0,0,0,0.9);
   box-shadow: inset 0 0 4px rgba(255, 215, 0, 0.3);
@@ -203,48 +206,49 @@ body {
   to { transform: scale(1.05); box-shadow: 0 0 15px #FFD700; }
 }
 
-/* Dashboard Statistik & Tombol Kontrol */
+/* Dashboard Statistik & Menu */
 .stats-panel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 100%;
+  gap: 6px;
+  width: 240px;
+  padding: 8px;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr) 70px;
-  gap: 6px;
+  grid-template-columns: repeat(3, 1fr) 50px;
+  gap: 4px;
   align-items: center;
 }
 
 .stat-box {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid var(--gold-dark);
-  border-radius: 6px;
-  padding: 6px;
+  border-radius: 5px;
+  padding: 4px 2px;
   text-align: center;
 }
 
 .stat-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: var(--gold-light);
   text-transform: uppercase;
 }
 
 .stat-value {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
   color: var(--cream-parchment);
 }
 
 #next-puzzle-box {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   margin: 0 auto;
   background: var(--bg-board);
   border: 1px dashed var(--gold-dark);
-  border-radius: 6px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -253,18 +257,18 @@ body {
 .btn-group {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .btn {
   background: linear-gradient(180deg, #D4AF37 0%, #AA820A 100%);
   color: var(--text-dark);
   border: none;
-  padding: 8px;
+  padding: 7px;
   font-weight: bold;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
@@ -277,18 +281,18 @@ body {
 .mobile-controls {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
+  gap: 4px;
   width: 240px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .touch-btn {
   background: rgba(212, 175, 55, 0.25);
   border: 1.5px solid var(--gold-primary);
   color: var(--gold-light);
-  padding: 10px 0;
-  font-size: 1.1rem;
-  border-radius: 6px;
+  padding: 8px 0;
+  font-size: 1rem;
+  border-radius: 5px;
   touch-action: manipulation;
   user-select: none;
   cursor: pointer;
@@ -300,7 +304,7 @@ body {
   color: var(--text-dark);
 }
 
-/* Modal JSON Manager */
+/* Modal JSON Editor */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -309,34 +313,34 @@ body {
   z-index: 100;
   align-items: center;
   justify-content: center;
-  padding: 15px;
+  padding: 12px;
 }
 
 .modal-content {
   background: var(--bg-card);
   border: 2px solid var(--gold-primary);
   border-radius: 8px;
-  padding: 15px;
-  max-width: 450px;
+  padding: 12px;
+  max-width: 320px;
   width: 100%;
 }
 
 .modal-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--gold-primary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   border-bottom: 1px solid var(--gold-dark);
   padding-bottom: 4px;
 }
 
 #json-editor-textarea {
   width: 100%;
-  height: 160px;
+  height: 150px;
   background: #111;
   color: #0f0;
   font-family: monospace;
-  padding: 8px;
+  padding: 6px;
   border: 1px solid var(--gold-dark);
-  border-radius: 6px;
-  margin-bottom: 8px;
+  border-radius: 5px;
+  margin-bottom: 6px;
 }
